@@ -5,6 +5,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using WebApi.Authentication;
+using WebApi.Interface;
+using WebApi.Model;
 
 namespace WebApi.Controllers
 {
@@ -14,10 +16,12 @@ namespace WebApi.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
-        public AuthenticationController (UserManager<ApplicationUser> userManager, IConfiguration configuration)
+        private readonly IMailService _mailService;
+        public AuthenticationController (UserManager<ApplicationUser> userManager, IConfiguration configuration, IMailService mailService)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _mailService = mailService;
         }
 
         [HttpPost]
@@ -45,8 +49,9 @@ namespace WebApi.Controllers
         [Route("Login")]
         public async Task <IActionResult> Login ([FromBody] Login login)
         {
-             var user = await _userManager.FindByNameAsync(login.Username);
-            if (user != null && await _userManager.CheckPasswordAsync(user, login.Password))
+            var user = await _userManager.FindByNameAsync(login.Username);
+            var checkPassword = await _userManager.CheckPasswordAsync(user, login.Password);
+            if (user != null && checkPassword)
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
                 var authClaims = new List<Claim>
@@ -78,19 +83,50 @@ namespace WebApi.Controllers
 
         [HttpPost]
         [Route("ResetPassword")]
-        public async Task<IActionResult> ResetPassword(RegisterModel model)
+        public async Task<IActionResult> ResetPassword(ResetPassword model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Email not found" });
             }
-            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, model.Password);
+            var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = token }, protocol: HttpContext.Request.Scheme);
+            MailRequest message = new MailRequest();
+            message.Body = callbackUrl +" ";
+            message.ToEmail = model.Email;
+            message.Subject = "test";
+            await _mailService.SendEmailAsync(message);
+            //await emailService.SendEmailAsync(model.Email, "Reset Password",
+            // $"Для сброса пароля пройдите по ссылке: <a href='{callbackUrl}'>link</a>");
             if (result.Succeeded)
             {
                 return Ok(new Response { Status = "Success", Message = "Reset Password Confirmation" });
             }
-            return BadRequest();
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = result.Errors.FirstOrDefault().Code });
+            }
+        }
+
+        [HttpPost]
+        [Route("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(ForgotPassword forgotPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(forgotPassword.Email);
+            if (user == null)
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Email not found" });
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var callback = Url.Action(nameof(ResetPassword), "Account", new { token, email = user.Email }, Request.Scheme);
+            var message = new MailRequest()
+            {
+                ToEmail = user.Email,
+                Body = callback,
+                Subject = "Reset password token",
+            };
+            await _mailService.SendEmailAsync(message);
+            return Ok(new Response { Status = "Success", Message = "Reset password success" });
         }
     }
 }
