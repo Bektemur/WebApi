@@ -10,9 +10,9 @@ namespace WebApi.Model
         public int StationId { get; set; }
         public string Name { get; set; }
         public StationType StationType { get; set; }
-        public string PlaceName { get; set; }
-        public string GeoLong { get; set; }
-        public string GeoLat { get; set; }
+        //public string PlaceName { get; set; }
+        //public string GeoLong { get; set; }
+        //public string GeoLat { get; set; }
     }
     public enum StationType
     {

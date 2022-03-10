@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Model;
-using static WebApi.Model.Improvements;
 
 namespace WebApi.Database
 {

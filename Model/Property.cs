@@ -61,7 +61,7 @@ namespace WebApi.Model
         [ForeignKey("ApplicationUserId")]
         public virtual ApplicationUser User { get; set; }
         public virtual ICollection<FileOnFileSystemModel> FileSystemModels { get; set; }
-        public virtual ICollection<Improvements> Improvements { get; set; }
+        public virtual ICollection<Improvement> Improvements { get; set; }
     }
     public enum PublishingState
     {
