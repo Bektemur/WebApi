@@ -17,13 +17,13 @@ namespace WebApi.Model
                         })));
 
             CreateMap<Property, PropertyViewModel>();
-
             CreateMap<Property, PropertyMainViewModel>();
             CreateMap<PropertyMainViewModel, Property>();
-
+            CreateMap<Province, ProvinceViewModel>();
+            CreateMap<Station, StationViewModel>();
+            CreateMap<City, CityViewModel>();
             CreateMap<Property, PropertyAddressViewModel>();
             CreateMap<PropertyAddressViewModel, Property>();
-
             CreateMap<Property, PropertyImprovmentViewModel>().ForMember(x => x.ImprovmentIds, y => y.MapFrom(x => x.Improvements.Select(z => z.Id).ToList()));
             CreateMap<PropertyImprovmentViewModel, Property>();
         }
