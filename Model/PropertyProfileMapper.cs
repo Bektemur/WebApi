@@ -20,8 +20,11 @@ namespace WebApi.Model
             CreateMap<Property, PropertyMainViewModel>();
             CreateMap<PropertyMainViewModel, Property>();
             CreateMap<Province, ProvinceViewModel>();
+            CreateMap<ProvinceViewModel,Province>();
             CreateMap<Station, StationViewModel>();
+            CreateMap<StationViewModel,Station>();
             CreateMap<City, CityViewModel>();
+            CreateMap<CityViewModel, City>();
             CreateMap<Property, PropertyAddressViewModel>();
             CreateMap<PropertyAddressViewModel, Property>();
             CreateMap<Property, PropertyImprovmentViewModel>().ForMember(x => x.ImprovmentIds, y => y.MapFrom(x => x.Improvements.Select(z => z.Id).ToList()));

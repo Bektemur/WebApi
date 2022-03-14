@@ -11,24 +11,30 @@ namespace WebApi.Controllers
     public class StationController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        public StationController(ApplicationDbContext context)
+        private readonly IMapper _mapper;
+        public StationController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
-        [HttpPost]
-        [Route("AddStation")]
-        public async Task<IActionResult> AddStation(StationViewModel station)
+        [HttpGet]
+        [Route("GetAllStation")]
+        public async Task<IActionResult> GetAllStation()
         {
-            if (station == null)
-                return BadRequest();
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<StationViewModel, Station>());
-            var mapper = new Mapper(config);
-            var stations = mapper.Map<StationViewModel, Station>(station);
-            _context.Stations.Add(stations);
-            await _context.SaveChangesAsync();
-            return Ok();
+            return Ok(_context.Stations.ToList());
         }
-
+        [HttpGet]
+        [Route("GetStationById")]
+        public async Task<IActionResult> GetStationById(int id)
+        {
+            return Ok(_context.Stations.Where(c=>c.StationId == id).ToList());
+        }
+        [HttpGet]
+        [Route("GetStationByStationTypeId")]
+        public async Task<IActionResult> GetStationByStationTypeId(int id)
+        {
+            return Ok(_context.Stations.Where(c => c.StationType == (StationType)id).ToList());
+        }
 
     }
 }
