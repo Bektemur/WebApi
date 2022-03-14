@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -27,8 +28,14 @@ builder.Services.AddSingleton<IMailService, MailService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAutoMapper(c => c.AddProfile<PropertyProfileMapper>());
+//builder.Services.AddAutoMapper(c => c.AddProfile<PropertyProfileMapper>());
+var mapperConfig = new MapperConfiguration(mc =>
+{
+    mc.AddProfile(new PropertyProfileMapper());
+});
 
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 //services.AddAutoMapper(c => c.AddProfile<PropertyProfileMapper>()
 builder.Services.AddAuthentication(options =>
 {
