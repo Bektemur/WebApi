@@ -36,8 +36,9 @@ namespace WebApi.Controllers
             var entity = _context.City.Where(v=>v.Id == id).FirstOrDefault();
             if (entity == null)
                 return BadRequest("City with Id = "+id+ " not found");
-            var cities = _mapper.Map<City>(city);
-            _context.City.Update(cities);
+            entity.Name = city.Name;
+            entity.ProvinceId = city.ProvinceId;
+            _context.City.Update(entity);
             await _context.SaveChangesAsync();
             return Ok();
         }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApi.Database;
 using WebApi.Model;
 using WebApi.ViewModel;
@@ -33,11 +34,12 @@ namespace WebApi.Controllers
         [Route("Edit/{id}")]
         public async Task<IActionResult> Update(int id, ProvinceViewModel province)
         {
-            var entity = _context.Province.Where(v => v.StationId == id).FirstOrDefault();
+            var entity = _context.Province.Where(v => v.ProvinceId == id).FirstOrDefault();
             if (entity == null)
-                return BadRequest("City with Id = " + id + " not found");
-            var provinces = _mapper.Map<Province>(province);
-            _context.Province.Update(provinces);
+                return BadRequest("Province with Id = " + id + " not found");
+            entity.Name = province.Name;
+            entity.StationId = province.StationId;
+            _context.Update(entity);
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -46,10 +48,21 @@ namespace WebApi.Controllers
         [Route("Get/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var entity = _context.Stations.Where(v => v.StationId == id).FirstOrDefault();
+            var entity = _context.Province.Where(v => v.ProvinceId == id).FirstOrDefault();
             if (entity == null)
-                return BadRequest("City with Id = " + id + " not found");
+                return BadRequest("Province with Id = " + id + " not found");
             return Ok(entity);
+        }
+        [HttpDelete]
+        [Route("Delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var entity = _context.Province.Where(v => v.ProvinceId == id).FirstOrDefault();
+            if (entity == null)
+                return BadRequest("Province with Id = " + id + " not found");
+            _context.Province.Remove(entity);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 }
