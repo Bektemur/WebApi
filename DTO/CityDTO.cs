@@ -1,6 +1,6 @@
 ﻿namespace WebApi.ViewModel
 {
-    public class CityViewModel
+    public class CityDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }

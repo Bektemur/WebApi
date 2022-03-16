@@ -9,7 +9,7 @@ namespace WebApi.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ProjectId { get; set; }
         public string Name { get; set; }
-        public DateTime? CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; } = DateTime.Today;
         public virtual List<Property> Properties { get; set; }
 
     }

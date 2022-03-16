@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,9 @@ using WebApi.ViewModel;
 
 namespace WebApi.Controllers
 {
+    
+    [Route("api/[controller]")]
+    [ApiController]
     public class PropertiesController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -22,33 +26,20 @@ namespace WebApi.Controllers
             _context = applicationDbContext;
             _mapper = mapper;
         }
-
         [HttpPost]
         [Route("AddProperty")]
-        public async Task<IActionResult> AddProperties([FromBody] PropertyMainViewModel model)
+        public async Task<IActionResult> AddProperties([FromBody] PropertyMainDTO model)
         {
-            
-                model.UpdateDate = DateTime.UtcNow;
-                var previous = await _context.Properties.AsNoTracking().FirstOrDefaultAsync(x => x.PropertyId == model.PropertyId);
-                if (previous != null)
-                {
-                    _mapper.Map<PropertyMainViewModel, Property>(model, previous);
-                    if (string.IsNullOrWhiteSpace(model.ApplicationUserId))
-                    {
-                        model.ApplicationUserId = GetCurrentUserId();
-                    }
-                    previous.UpdateDate = DateTime.UtcNow;
-                    _context.Properties.Update(previous);
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    var newOne = _mapper.Map<Property>(model);
-                    await _context.Properties.AddAsync(newOne);
-                    await _context.SaveChangesAsync();
-                    model.PropertyId = newOne.PropertyId;
-                }
-                return Ok(new Response { Status = "Success", Message = "User Created Successfully" });
+            if (model == null)
+            {
+                return BadRequest();
+            }
+            model.UpdateDate = DateTime.UtcNow;
+            //model.ApplicationUserId = GetCurrentUserId();
+            var newOne = _mapper.Map<Property>(model);
+            await _context.Properties.AddAsync(newOne);
+            await _context.SaveChangesAsync();
+            return Ok(new Response { Status = "Success", Message = "Property Created Successfully" });
         }
 
         private string GetCurrentUserId()

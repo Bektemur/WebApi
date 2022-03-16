@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using WebApi.Authentication;
+using WebApi.Database;
 using WebApi.Interface;
 using WebApi.Model;
 
@@ -17,11 +19,13 @@ namespace WebApi.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly IMailService _mailService;
-        public AuthenticationController (UserManager<ApplicationUser> userManager, IConfiguration configuration, IMailService mailService)
+        private readonly ApplicationDbContext _context;
+        public AuthenticationController (UserManager<ApplicationUser> userManager, IConfiguration configuration, IMailService mailService, ApplicationDbContext context)
         {
             _userManager = userManager;
             _configuration = configuration;
             _mailService = mailService;
+            _context = context;
         }
 
         [HttpPost]
@@ -127,6 +131,13 @@ namespace WebApi.Controllers
             };
             await _mailService.SendEmailAsync(message);
             return Ok(new Response { Status = "Success", Message = "Reset password success" });
+        }
+        [Authorize(Roles = "Administrator")]
+        [HttpGet]
+        [Route("GetAllUser")]
+        public IActionResult GetAllUser()
+        {
+            return Ok(_context.Users.ToList());
         }
     }
 }

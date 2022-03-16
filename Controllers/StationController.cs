@@ -37,7 +37,7 @@ namespace WebApi.Controllers
         }
         [HttpPost]
         [Route("Create")]
-        public async Task<IActionResult> Create(StationViewModel station)
+        public async Task<IActionResult> Create(StationDTO station)
         {
             if (station == null)
                 return BadRequest();
@@ -49,7 +49,7 @@ namespace WebApi.Controllers
 
         [HttpPut]
         [Route("Edit/{id}")]
-        public async Task<IActionResult> Update(int id, StationViewModel station)
+        public async Task<IActionResult> Update(int id, StationDTO station)
         {
             var entity = _context.Stations.Where(v => v.StationId == id).FirstOrDefault();
             if (entity == null)

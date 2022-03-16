@@ -1,6 +1,6 @@
 ﻿namespace WebApi.ViewModel
 {
-    public class PropertyAddressViewModel
+    public class PropertyAddressDTO
     {
         public int PropertyId { get; set; }
         public string HouseNumber { get; set; }

@@ -20,7 +20,7 @@ namespace WebApi.Controllers
         }
         [HttpPost]
         [Route("Create")]
-        public async Task<IActionResult> Create(CityViewModel city)
+        public async Task<IActionResult> Create(CityDTO city)
         {
             if (city == null) 
                 return BadRequest();
@@ -31,7 +31,7 @@ namespace WebApi.Controllers
         }
         [HttpPut]
         [Route("Edit/{id}")]
-        public async Task<IActionResult> Update(int id, CityViewModel city)
+        public async Task<IActionResult> Update(int id, CityDTO city)
         {
             var entity = _context.City.Where(v=>v.Id == id).FirstOrDefault();
             if (entity == null)
@@ -55,13 +55,13 @@ namespace WebApi.Controllers
         }
         [HttpGet]
         [Route("GetAll")]
-        public async Task<IActionResult> GetAll()
+        public IActionResult GetAll()
         {
             return Ok(_context.City.ToList());
         }
         [HttpGet]
         [Route("Get/{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public IActionResult GetById(int id)
         {
             var entity = _context.City.Where(v => v.Id == id).FirstOrDefault();
             if (entity == null)

@@ -2,7 +2,7 @@
 
 namespace WebApi.ViewModel
 {
-    public class PropertyViewModel : Property
+    public class PropertyDTO : Property
     {
         public string[] SelectedBasic { get; set; }
     }
