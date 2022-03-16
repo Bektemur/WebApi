@@ -2,7 +2,7 @@
 
 namespace WebApi.ViewModel
 {
-    public class StationViewModel
+    public class StationDTO
     {
         public string Name { get; set; }
         public int StationType { get; set; }

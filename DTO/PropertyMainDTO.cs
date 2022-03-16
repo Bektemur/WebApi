@@ -3,9 +3,8 @@ using WebApi.Model;
 
 namespace WebApi.ViewModel
 {
-    public class PropertyMainViewModel
+    public class PropertyMainDTO
     {
-        public int PropertyId { get; set; }
         public string ExternalPropertyId { get; set; }
         [Required]
         public string Name { get; set; }

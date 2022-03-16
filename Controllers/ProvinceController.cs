@@ -21,7 +21,7 @@ namespace WebApi.Controllers
 
         [HttpPost]
         [Route("Create")]
-        public async Task<IActionResult> Create(ProvinceViewModel province)
+        public async Task<IActionResult> Create(ProvinceDTO province)
         {
             if (province == null)
                 return BadRequest();
@@ -32,7 +32,7 @@ namespace WebApi.Controllers
         }
         [HttpPut]
         [Route("Edit/{id}")]
-        public async Task<IActionResult> Update(int id, ProvinceViewModel province)
+        public async Task<IActionResult> Update(int id, ProvinceDTO province)
         {
             var entity = _context.Province.Where(v => v.ProvinceId == id).FirstOrDefault();
             if (entity == null)
