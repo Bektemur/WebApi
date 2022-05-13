@@ -65,5 +65,11 @@ namespace WebApi.Controllers
             }
             return Ok(typeProperty);
         }
+        [HttpGet]
+        [Route("GetAll")]
+        public ActionResult GetAll()
+        {
+            return Ok(_context.TypeProperties.ToList());
+        }
     }
 }
