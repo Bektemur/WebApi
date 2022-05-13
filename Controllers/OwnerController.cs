@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Database;
 using WebApi.DTO;
+using WebApi.Model;
 
 namespace WebApi.Controllers
 {
@@ -22,8 +23,8 @@ namespace WebApi.Controllers
         {
             if (owner == null)
                 return BadRequest();
-            var cities = _mapper.Map<OwnerDTO>(owner);
-            _context.Add(cities);
+            var owners = _mapper.Map<Owner>(owner);
+            _context.Owners.Add(owners);
             await _context.SaveChangesAsync();
             return Ok();
         }

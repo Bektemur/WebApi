@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Database;
+using WebApi.Model;
 using WebApi.ViewModel;
 
 namespace WebApi.Controllers
@@ -22,8 +23,8 @@ namespace WebApi.Controllers
         {
             if (project == null)
                 return BadRequest();
-            var cities = _mapper.Map<ProjectDTO>(project);
-            _context.Add(cities);
+            var projects = _mapper.Map<Project>(project);
+            _context.Projects.Add(projects);
             await _context.SaveChangesAsync();
             return Ok();
         }
