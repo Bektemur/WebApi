@@ -32,7 +32,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddSingleton<IMailService, MailService>();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
+Injection.Load(builder.Services);
 var mapperConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new PropertyProfileMapper());
@@ -73,3 +75,16 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+internal class Injection
+{
+    internal static void Load(IServiceCollection services)
+    {
+        services.AddHttpClient();
+        services.AddTransient<IFileRepository, FileRepository>();
+        services.AddTransient<IPropertyRepository, PropertyRepository>();
+
+        services.AddTransient<IFileService, FileService>();
+        services.AddTransient<IPropertyService, PropertyService>();
+    }
+}
