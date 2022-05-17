@@ -68,6 +68,24 @@ namespace WebApi.Controllers
             await _context.SaveChangesAsync();
             return Ok(new Response { Status = "Success", Message = "Property Created Successfully" });
         }
+
+        [HttpPost]
+        [Route("AddImprovments")]
+        public async Task<IActionResult> Improvments(PropertyImprovmentDTO model)
+        {
+            //Получение старых улучшений
+            var oldImprovments = _context.ImprovementToProperty.Where(x => x.PropertyId == model.PropertyId).ToList();
+            //Удаление старых улучшений которые не были выбраны.
+            var impToDelete = oldImprovments.Where(x => !model.ImprovmentIds.Contains(x.ImprovementId)).ToList();
+            impToDelete.ForEach(x => _context.ImprovementToProperty.Remove(x));
+            //Добавление новых которые были добавлены, но не было раньше в БД.
+            var newImprovments = model.ImprovmentIds.Where(x => !oldImprovments.Any(y => y.ImprovementId == x)).ToList();
+            newImprovments.ForEach(item => _context.ImprovementToProperty.Add(new ImprovementToProperty(model.PropertyId, item)));
+            //Итоговое сохранение
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
         [HttpPost]
         [Route("AddAddress")]
         public async Task<IActionResult> Address(PropertyAddressDTO model)
@@ -85,6 +103,7 @@ namespace WebApi.Controllers
             }
             return BadRequest("Property with Id = " + model.PropertyId + " not found");
         }
+
         [HttpPost]
         [Route("AddPhotos")]
         public async Task<IActionResult> Photos([Required]List<IFormFile> files, [Required]int propertyId)
@@ -131,5 +150,56 @@ namespace WebApi.Controllers
         {
             return User.FindFirst(ClaimTypes.NameIdentifier).Value;
         }
+
+        [HttpPost]
+        [Route("PublishProperty")]
+        public async Task<IActionResult> Publish(PropertyDTO model)
+        {
+            var property = await _context.Properties.AsNoTracking().FirstOrDefaultAsync(x => x.PropertyId == model.PropertyId);
+            property.PublishingState = model.PublishingState;
+            property.Note = model.Note;
+            property.UpdateDate = DateTime.UtcNow;
+            if (property.PublishingState == PublishingState.Published) { property.PublicDate = DateTime.UtcNow; }
+            _context.Properties.Update(property);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpGet]
+        [Route("GetPropertyById")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var property = await _context.Properties
+               .Include(p => p.Project)
+               .Include(p => p.Station)
+               .Include(p => p.City)
+               .Include(p => p.TypeProperties)
+               .Include(p => p.Improvements).ThenInclude(x => x.Improvement)
+               .Include(p => p.FileSystemModels)
+               .Include(p => p.Owner)
+               .Include(p => p.Company)
+               .FirstOrDefaultAsync(m => m.PropertyId == id);
+            if (property == null)
+                return BadRequest("Property with Id = " + id + " not found");
+            return Ok(property);
+        }
+
+        [HttpGet]
+        [Route("GetProperties")]
+        public IActionResult GetAll()
+        {
+            return Ok(_context.Properties.ToList());
+        }
+
+        [HttpDelete, Route("DeleteProperty")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var properties = await _context.Properties.FindAsync(id);
+            if (properties == null)
+                return NotFound();
+            _context.Properties.Remove(properties);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
     }
 }

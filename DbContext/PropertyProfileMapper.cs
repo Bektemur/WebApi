@@ -32,6 +32,8 @@ namespace WebApi.Model
             CreateMap<ProjectDTO, Project>();
             CreateMap<Property, PropertyAddressDTO>();
             CreateMap<PropertyAddressDTO, Property>();
+            CreateMap<Improvement, ImprovementDTO>();
+            CreateMap<ImprovementDTO, Improvement>();
             CreateMap<Property, PropertyImprovmentDTO>().ForMember(x => x.ImprovmentIds, y => y.MapFrom(x => x.Improvements.Select(z => z.Id).ToList()));
             CreateMap<PropertyImprovmentDTO, Property>();
             CreateMap<TypePropertyDTO,TypeProperty>();
