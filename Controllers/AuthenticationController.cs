@@ -34,7 +34,7 @@ namespace WebApi.Controllers
         {
             var userExist = await _userManager.FindByNameAsync(registerModel.UserName);
             if (userExist != null)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Username not found" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User with this username already exists, please select another username" });
             ApplicationUser user = new ApplicationUser()
             {
                 Email = registerModel.Email,
