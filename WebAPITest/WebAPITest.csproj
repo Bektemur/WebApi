@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="E:\WEBAPI\WebApi.csproj" />
+    <ProjectReference Include="..\WebAPI\WebApi.csproj" />
   </ItemGroup>
 
 </Project>

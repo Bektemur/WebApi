@@ -22,16 +22,18 @@ namespace WebApi.Service.CityService
             await _context.SaveChangesAsync();
         }
 
-        public async Task<City> GetById(int cityId)
+        public async Task<CityDTO> GetById(int cityId)
         {
             var cityData = await _context.City.FirstOrDefaultAsync(z => z.Id == cityId);
-            return cityData;
+            var cities = _mapper.Map<CityDTO>(cityData);
+            return cities;
         }
 
-        public async Task<List<City>> GetCityList()
+        public async Task<List<CityDTO>> GetCityList()
         {
             var cityList = await _context.City.ToListAsync();
-            return cityList;
+            var cities = _mapper.Map<List<CityDTO>>(cityList);
+            return cities;
         }
 
         public async Task RemoveCity(int cityId)

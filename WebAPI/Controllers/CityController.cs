@@ -36,10 +36,7 @@ namespace WebApi.Controllers
             var entity = _context.City.Where(v=>v.Id == id).FirstOrDefault();
             if (entity == null)
                 return BadRequest("City with Id = "+id+ " not found");
-            entity.Name = city.Name;
-            entity.ProvinceId = city.ProvinceId;
-            _context.City.Update(entity);
-            await _context.SaveChangesAsync();
+            await _cityService.UpdateCity(city);
             return Ok();
         }
         [HttpDelete]
@@ -49,24 +46,23 @@ namespace WebApi.Controllers
             var entity = _context.City.Where(v => v.Id == id).FirstOrDefault();
             if (entity == null)
                 return BadRequest("City with Id = " + id + " not found");
-            _context.City.Remove(entity);
-            await _context.SaveChangesAsync();
+            await _cityService.RemoveCity(id);
             return Ok();
         }
         [HttpGet]
         [Route("GetAll")]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(_context.City.ToList());
+            return Ok(await _cityService.GetCityList());
         }
         [HttpGet]
         [Route("Get/{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var entity = _context.City.Where(v => v.Id == id).FirstOrDefault();
             if (entity == null)
                 return BadRequest("City with Id = " + id + " not found");
-            return  Ok(entity);
+            return  Ok(await _cityService.GetById(id));
         }
 
 

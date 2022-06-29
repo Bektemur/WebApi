@@ -55,5 +55,26 @@ namespace WebAPITest
             await _cityService.Object.RemoveCity(cityId);
             _cityService.Verify(repo => repo.RemoveCity(cityId), Times.Once);
         }
+        [Fact]
+        public async Task GetAllCity_Test()
+        {
+            _cityService.Setup(srvc => srvc.GetCityList()).ReturnsAsync(new List<CityDTO>()
+            {
+                new CityDTO() { ProvinceId = 1, Name = "Tashkent" },
+                new CityDTO() { ProvinceId = 2, Name = "Fergana" },
+                new CityDTO() { ProvinceId = 2, Name = "Samarqand" },
+            });
+            var result = await _cityService.Object.GetCityList();
+            Assert.True(result.Count == 3);
+        }
+
+        [Fact]
+        public async Task GetCity_Test()
+        {
+            int cityId = 1;
+            _cityService.Setup(srvc => srvc.GetById(cityId)).ReturnsAsync(new CityDTO() { Name = "Tashkent", ProvinceId = 1 });
+            var result = await _cityService.Object.GetById(cityId);
+            Assert.NotNull(result);
+        }
     }
 }
