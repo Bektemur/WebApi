@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Database;
 using WebApi.Model;
+using WebApi.Service.CityService;
 using WebApi.ViewModel;
 
 namespace WebApi.Controllers
@@ -10,23 +11,22 @@ namespace WebApi.Controllers
     [ApiController]
     public class CityController: ControllerBase
     {
+        private readonly ICityService _cityService;
         private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
 
-        public CityController(ApplicationDbContext context, IMapper mapper)
+        public CityController(ICityService cityService, ApplicationDbContext context)
         {
+            _cityService = cityService;
             _context = context;
-            _mapper = mapper;
         }
+
         [HttpPost]
         [Route("Create")]
         public async Task<IActionResult> Create(CityDTO city)
         {
             if (city == null) 
                 return BadRequest();
-            var cities = _mapper.Map<City>(city);
-            _context.Add(cities);
-            await _context.SaveChangesAsync();
+            await _cityService.AddCity(city);
             return Ok();
         }
         [HttpPut]
