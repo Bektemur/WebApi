@@ -2,6 +2,7 @@
 using WebApi.Database;
 using WebApi.ViewModel;
 using WebApi.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Service.CityService
 {
@@ -21,24 +22,32 @@ namespace WebApi.Service.CityService
             await _context.SaveChangesAsync();
         }
 
-        public Task<CityDTO> GetById(int studentId)
+        public async Task<City> GetById(int cityId)
         {
-            throw new NotImplementedException();
+            var cityData = await _context.City.FirstOrDefaultAsync(z => z.Id == cityId);
+            return cityData;
         }
 
-        public Task<List<CityDTO>> GetCityList()
+        public async Task<List<City>> GetCityList()
         {
-            throw new NotImplementedException();
+            var cityList = await _context.City.ToListAsync();
+            return cityList;
         }
 
-        public Task RemoveCity(int studentId)
+        public async Task RemoveCity(int cityId)
         {
-            throw new NotImplementedException();
+            var city = await _context.City.FirstOrDefaultAsync(z => z.Id== cityId);
+            if (city != null)
+            {
+                _context.City.Remove(city);
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public Task UpdateCity(CityDTO studentEntity)
+        public async Task UpdateCity(CityDTO city)
         {
-            throw new NotImplementedException();
+            _context.Entry(city).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }
