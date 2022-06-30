@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebApi.Database;
-using WebApi.Model;
+using WebApi.Service.ProvinceService;
 using WebApi.ViewModel;
 
 namespace WebApi.Controllers
@@ -12,11 +10,11 @@ namespace WebApi.Controllers
     public class ProvinceController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
-        public ProvinceController(ApplicationDbContext context, IMapper mapper)
+        private readonly IProvinceService _provinceService;
+        public ProvinceController(ApplicationDbContext context, IProvinceService provinceService)
         {
             _context = context;
-            _mapper = mapper;
+            _provinceService = provinceService;
         }
 
         [HttpPost]
@@ -25,9 +23,7 @@ namespace WebApi.Controllers
         {
             if (province == null)
                 return BadRequest();
-            var provinces = _mapper.Map<Province>(province);
-            _context.Province.Add(provinces);
-            await _context.SaveChangesAsync();
+            await _provinceService.AddProvince(province);
             return Ok();
         }
         [HttpPut]
@@ -37,10 +33,7 @@ namespace WebApi.Controllers
             var entity = _context.Province.Where(v => v.ProvinceId == id).FirstOrDefault();
             if (entity == null)
                 return BadRequest("Province with Id = " + id + " not found");
-            entity.Name = province.Name;
-            entity.StationId = province.StationId;
-            _context.Update(entity);
-            await _context.SaveChangesAsync();
+            await _provinceService.UpdateProvince(province);
             return Ok();
         }
 
@@ -51,7 +44,7 @@ namespace WebApi.Controllers
             var entity = _context.Province.Where(v => v.ProvinceId == id).FirstOrDefault();
             if (entity == null)
                 return BadRequest("Province with Id = " + id + " not found");
-            return Ok(entity);
+            return Ok(await _provinceService.GetById(id));
         }
         [HttpDelete]
         [Route("Delete/{id}")]
@@ -60,8 +53,7 @@ namespace WebApi.Controllers
             var entity = _context.Province.Where(v => v.ProvinceId == id).FirstOrDefault();
             if (entity == null)
                 return BadRequest("Province with Id = " + id + " not found");
-            _context.Province.Remove(entity);
-            await _context.SaveChangesAsync();
+            await _provinceService.RemoveProvince(id);
             return Ok();
         }
     }

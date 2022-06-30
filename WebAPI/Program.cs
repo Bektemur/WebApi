@@ -14,6 +14,7 @@ using WebApi.Interface;
 using WebApi.Model;
 using WebApi.Service;
 using WebApi.Service.CityService;
+using WebApi.Service.ProjectService;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
@@ -88,5 +89,6 @@ internal class Injection
         services.AddTransient<IFileService, FileService>();
         services.AddTransient<IPropertyService, PropertyService>();
         services.AddTransient<ICityService, CityService>();
+        services.AddTransient<IProjectService, ProjectService>();
     }
 }

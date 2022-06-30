@@ -7,7 +7,7 @@ namespace WebApi.Service.CityService
     {
         Task AddCity(CityDTO cityEntity);
         Task<List<CityDTO>> GetCityList();
-        Task<CityDTO> GetById(int cityId);
+        Task<City> GetById(int cityId);
         Task UpdateCity(CityDTO cityEntity);
         Task RemoveCity(int cityId);
     }

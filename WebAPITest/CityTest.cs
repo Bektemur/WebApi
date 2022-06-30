@@ -72,7 +72,7 @@ namespace WebAPITest
         public async Task GetCity_Test()
         {
             int cityId = 1;
-            _cityService.Setup(srvc => srvc.GetById(cityId)).ReturnsAsync(new CityDTO() { Name = "Tashkent", ProvinceId = 1 });
+            _cityService.Setup(srvc => srvc.GetById(cityId)).ReturnsAsync(new City() { Name = "Tashkent", ProvinceId = 1 });
             var result = await _cityService.Object.GetById(cityId);
             Assert.NotNull(result);
         }

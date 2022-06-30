@@ -22,10 +22,10 @@ namespace WebApi.Service.CityService
             await _context.SaveChangesAsync();
         }
 
-        public async Task<CityDTO> GetById(int cityId)
+        public async Task<City> GetById(int cityId)
         {
             var cityData = await _context.City.FirstOrDefaultAsync(z => z.Id == cityId);
-            var cities = _mapper.Map<CityDTO>(cityData);
+            var cities = _mapper.Map<City>(cityData);
             return cities;
         }
 

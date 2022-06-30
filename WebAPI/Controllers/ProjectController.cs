@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Database;
 using WebApi.Model;
+using WebApi.Service.ProjectService;
 using WebApi.ViewModel;
 
 namespace WebApi.Controllers
@@ -11,21 +12,20 @@ namespace WebApi.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
-        public ProjectController(ApplicationDbContext context, IMapper mapper)
+        private readonly IProjectService _projectService;
+        public ProjectController(ApplicationDbContext context, IProjectService projectService)
         {
             _context = context;
-            _mapper = mapper;
+            _projectService = projectService;
         }
+
         [HttpPost]
         [Route("Create")]
         public async Task<IActionResult> Create(ProjectDTO project)
         {
             if (project == null)
                 return BadRequest();
-            var projects = _mapper.Map<Project>(project);
-            _context.Projects.Add(projects);
-            await _context.SaveChangesAsync();
+            await _projectService.AddProject(project);
             return Ok();
         }
         [HttpPut]
@@ -34,11 +34,8 @@ namespace WebApi.Controllers
         {
             var entity = _context.Projects.Where(v => v.ProjectId == id).FirstOrDefault();
             if (entity == null)
-                return BadRequest("City with Id = " + id + " not found");
-            entity.Name = project.Name;
-            entity.CreatedDate = DateTime.Now;
-            _context.Projects.Update(entity);
-            await _context.SaveChangesAsync();
+                return BadRequest("Project with Id = " + id + " not found");
+            await _projectService.UpdateProject(project);
             return Ok();
         }
         [HttpDelete]
@@ -47,16 +44,24 @@ namespace WebApi.Controllers
         {
             var entity = _context.Projects.Where(v => v.ProjectId == id).FirstOrDefault();
             if (entity == null)
-                return BadRequest("City with Id = " + id + " not found");
-            _context.Projects.Remove(entity);
-            await _context.SaveChangesAsync();
+                return BadRequest("Project with Id = " + id + " not found");
+            await _projectService.RemoveProject(id);
             return Ok();
         }
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(_context.Projects.ToList());
+            return Ok(await _projectService.GetProjectList());
+        }
+        [HttpGet]
+        [Route("Get/{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var entity = _context.Projects.Where(v => v.ProjectId == id).FirstOrDefault();
+            if (entity == null)
+                return BadRequest("Project with Id = " + id + " not found");
+            return Ok(await _projectService.GetById(id));
         }
     }
 }
